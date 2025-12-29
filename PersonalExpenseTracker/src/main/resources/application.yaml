@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: PersonalExpenseTracker
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/petdb
+    username: postgres
+    password: admin
+    driverClassName: org.postgresql.Driver
+
+  security:
+    user:
+      name: admin
+      password: admin
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
