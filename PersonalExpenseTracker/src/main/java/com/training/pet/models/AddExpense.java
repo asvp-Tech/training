@@ -12,5 +12,6 @@ public class AddExpense {
     private double amount;
     private String category;
     private String description;
+    private String paymentType;
     private Date date;
 }

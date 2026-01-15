@@ -23,12 +23,15 @@ public class Expense {
     @Column
     private String description;
     @Column
+    private String paymentType;
+    @Column
     private Date date;
 
-    public Expense(double amount, String category, String description, Date date) {
+    public Expense(double amount, String category, String description, String paymentType, Date date) {
         this.amount = amount;
         this.category = category;
         this.description = description;
+        this.paymentType = paymentType;
         this.date = date;
     }
 }
