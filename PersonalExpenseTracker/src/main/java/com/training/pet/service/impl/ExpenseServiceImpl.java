@@ -16,7 +16,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public Expense addExpense(AddExpense expense) {
         Expense expenseEntity = new Expense(expense.getAmount(),expense.getCategory(),
-                expense.getDescription(),expense.getDate());
+                expense.getDescription(),expense.getPaymentType(),expense.getDate());
         Expense addExpense = expenseDao.addExpense(expenseEntity);
         return addExpense;
     }
