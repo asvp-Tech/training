@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: PersonalExpenseTracker
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/petdb
+    username: postgres
+    password: admin
+    driverClassName: org.postgresql.Driver
+
+  security:
+    user:
+      name: admin
+      password: admin
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+jwt:
+  #    secret: "0dnkeLA0HBodz205u0+695Iz+TPISMni8ZQRKOiQZoI="
+  secret: "X8v#9mPqT2w!rFsL4zYb7dQeJkN1cUvM"
+  expiration-in-ms: 99999999999
