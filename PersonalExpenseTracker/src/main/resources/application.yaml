@@ -21,3 +21,7 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+
+jwt:
+  secret: "0dnkeLA0HBodz205u0+695Iz+TPISMni8ZQRKOiQZoI="
+  expiration-in-ms: 99999999999
