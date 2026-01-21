@@ -26,7 +26,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public AuthResponse register(RegistrationRequest request) {
+    public void register(RegistrationRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new RuntimeException("Email already exists! Please use a different email.");
         }
@@ -37,15 +37,15 @@ public class AuthService {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
-        var token = jwtService.generateToken(user);
-        return new AuthResponse(token, user.getEmail());
+//        var token = jwtService.generateToken(user);
+//        return new AuthResponse(token, user.getEmail());
     }
 
     public AuthResponse authenticate(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
-        var user = userRepository.findByEmail(request.email()).orElseThrow();
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
         var token = jwtService.generateToken(user);
         return new AuthResponse(token, user.getEmail());
     }

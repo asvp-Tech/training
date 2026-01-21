@@ -3,10 +3,12 @@ package com.training.pet.config;
 import com.training.pet.config.JwtAuthenticationFilter;
 import com.training.pet.dao.UserRepository;
 import com.training.pet.security.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.training.pet.security.UserPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,53 +21,68 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity // Add this
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
+    // 1️⃣ UserDetailsService (SINGLE definition)
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
+                .map(user -> new UserPrincipal(user))  // wrap entity in UserPrincipal
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    // 3. Define the filter as a Bean here instead of @Component
+    // 2️⃣ Password encoder
     @Bean
-    public JwtAuthenticationFilter jwtAuthFilter(JwtService jwtService) {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // 3️⃣ DaoAuthenticationProvider (Spring Security 6 style)
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider(userDetailsService());
+
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    // 4️⃣ AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    // 5️⃣ JWT filter
+    @Bean
+    public JwtAuthenticationFilter jwtAuthFilter() {
         return new JwtAuthenticationFilter(jwtService, userDetailsService());
     }
 
+    // 6️⃣ Security filter chain
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwtService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Use a wildcard that covers the end of the path
                         .requestMatchers("/pet/api/v1/auth/**").permitAll()
                         .requestMatchers(
-                                "/api/authx/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 4. Use the bean method
-                .addFilterBefore(jwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
     }
 }

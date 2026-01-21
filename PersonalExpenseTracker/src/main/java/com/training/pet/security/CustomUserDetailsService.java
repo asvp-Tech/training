@@ -22,6 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found"));
 
-        return UserPrincipal.fromUser(user);
+        return new UserPrincipal(user);
     }
 }
