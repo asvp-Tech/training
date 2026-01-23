@@ -30,6 +30,11 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsByNameIgnoreCaseAndUserId(dto.getName(), userId)) {
             throw new BadRequestException("Category already exists");
         }
+        for(com.training.pet.enums.Category c : com.training.pet.enums.Category.values()){
+            if(dto.getName().contains(c.toString())){
+                throw new BadRequestException("This is the Default Category, Please enter different one!");
+            }
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -51,6 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
                 .stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+
+    @Override
+    public List<Category> getAll() {
+        return categoryRepository.findAll();
     }
 
     @Override

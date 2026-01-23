@@ -3,35 +3,36 @@ package com.training.pet.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
-@Data
+@Table(name = "expenses")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column
-    private double amount;
-    @Column
-    private String category;
-    @Column
+    @Column(nullable = false)
+    private BigDecimal amount;
+
+    @Column(nullable = false)
     private String description;
-    @Column
-    private String paymentType;
-    @Column
-    private Date date;
 
-    public Expense(double amount, String category, String description, String paymentType, Date date) {
-        this.amount = amount;
-        this.category = category;
-        this.description = description;
-        this.paymentType = paymentType;
-        this.date = date;
-    }
+    @Column(nullable = false)
+    private LocalDate expenseDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

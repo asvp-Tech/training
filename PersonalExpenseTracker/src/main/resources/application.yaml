@@ -1,11 +1,15 @@
 spring:
   application:
     name: PersonalExpenseTracker
+  sql:
+    init:
+      mode: always
   jpa:
     database: POSTGRESQL
     show-sql: true
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   datasource:
     platform: postgres
     url: jdbc:postgresql://localhost:5432/petdb
