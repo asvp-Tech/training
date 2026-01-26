@@ -2,12 +2,14 @@ package com.training.pet.service.impl;
 
 import com.training.pet.dao.CategoryRepository;
 import com.training.pet.dao.ExpenseRepo;
+import com.training.pet.dao.UserRepository;
 import com.training.pet.entity.Category;
 import com.training.pet.entity.Expense;
 import com.training.pet.entity.User;
 import com.training.pet.exceptions.ResourceNotFoundException;
 import com.training.pet.models.ExpenseRequest;
 import com.training.pet.Response.ExpenseResponse;
+import com.training.pet.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,13 +23,27 @@ public class ExpenseServiceImpl {
 
     private final ExpenseRepo expenseRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+
+//    private User getLoggedInUser() {
+//        return (User) SecurityContextHolder
+//                .getContext()
+//                .getAuthentication()
+//                .getPrincipal();
+//    }
 
     private User getLoggedInUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+
+        UserPrincipal principal = (UserPrincipal)
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+        return userRepository.findById(principal.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
 
     public ExpenseResponse addExpense(ExpenseRequest request) {
         User user = getLoggedInUser();
