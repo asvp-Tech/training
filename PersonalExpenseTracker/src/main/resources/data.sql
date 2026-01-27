@@ -28,4 +28,4 @@ VALUES
     ('ENTERTAINMENT', true, NULL),
     ('BILLS', true, NULL),
     ('OTHERS', true, NULL)
-ON CONFLICT (name, user_id) DO NOTHING;
+ON CONFLICT DO NOTHING;
