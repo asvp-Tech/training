@@ -26,17 +26,25 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public void register(RegistrationRequest request) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new RuntimeException("Email already exists! Please use a different email.");
+    public boolean register(RegistrationRequest request) {
+        try {
+            if (userRepository.findByEmail(request.email()).isPresent()) {
+                throw new RuntimeException("Email already exists! Please use a different email.");
+            }
+            var user = User.builder()
+                    .email(request.email())
+                    .password(passwordEncoder.encode(request.password()))
+                    .fullName(request.fullName())
+                    .confirmPassword(request.confirmPassword())
+                    .role(Role.USER)
+                    .build();
+            userRepository.save(user);
+            return true;
         }
-        var user = User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .fullName(request.fullName())
-                .role(Role.USER)
-                .build();
-        userRepository.save(user);
+        catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
 //        var token = jwtService.generateToken(user);
 //        return new AuthResponse(token, user.getEmail());
     }

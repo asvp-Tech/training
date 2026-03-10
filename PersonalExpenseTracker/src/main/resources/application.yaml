@@ -29,3 +29,6 @@ spring:
 jwt:
   secret: "0dnkeLA0HBodz205u0+695Iz+TPISMni8ZQRKOiQZoI="
   expiration-in-ms: 99999999999
+
+server:
+  port: 8081

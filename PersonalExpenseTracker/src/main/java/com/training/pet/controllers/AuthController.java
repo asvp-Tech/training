@@ -1,5 +1,6 @@
 package com.training.pet.controllers;
 
+import com.training.pet.Response.ApiResponse;
 import com.training.pet.Response.AuthResponse;
 import com.training.pet.models.LoginRequest;
 import com.training.pet.models.RegistrationRequest;
@@ -17,9 +18,18 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegistrationRequest request) {
-        authService.register(request);
-        return ResponseEntity.ok("User registered successfully");
+    public ApiResponse register(@RequestBody RegistrationRequest request) {
+        ApiResponse response = new ApiResponse();
+        System.out.print(request.toString());
+        boolean status = authService.register(request);
+        if(status){
+            response.setMessage("User registered successfully");
+        }
+        else{
+            response.setMessage("Something is wrong!!");
+        }
+
+        return response;
     }
 
     @PostMapping("/login")

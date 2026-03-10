@@ -8,12 +8,13 @@
 -- Email    : admin@expense.com
 -- Password : admin@123 (BCrypt)
 
-INSERT INTO users (email, password, full_name, role)
+INSERT INTO users (email, password, full_name, role, confirm_password)
 VALUES (
     'admin@expense.com',
     '$2a$10$y0K.J720sZYqJ3ia11.AQ.edaLd5EiYjGZTD/gIr78E9lJ.IrZ9qy',
     'System Admin',
-    'ADMIN'
+    'ADMIN',
+    'admin@123'
 )
 ON CONFLICT (email) DO NOTHING;
 

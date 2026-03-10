@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pet/api/v1/expenses/analytics")
@@ -29,6 +30,8 @@ public class ExpenseAnalyticsController {
     // 2 Monthly expense summary
     @GetMapping("/monthly")
     public List<MonthlyExpenseResponse> getMonthlySummary() {
+        List<MonthlyExpenseResponse> list  = analyticsService.getMonthlySummary();
+        list.stream().filter(item -> item!=null).collect(Collectors.toList());
         return analyticsService.getMonthlySummary();
     }
 
